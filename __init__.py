@@ -12,6 +12,7 @@ def plugin():
         image_path = gr.Textbox("", label="图片目录")
         image_format = gr.Radio(
             ["jpg", "png"],
+            value="png",
             label="压缩格式(jpg 格式图片较小, 但无法存储 pnginfo; png 格式反之)",
         )
         with gr.Row():
