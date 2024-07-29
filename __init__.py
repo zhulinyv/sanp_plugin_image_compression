@@ -29,6 +29,6 @@ def plugin():
         )
         compression_and_organization_button.click(
             compression_and_organization,
-            inputs=[image_format, image_path],
+            inputs=image_path,
             outputs=output_info,
         )
