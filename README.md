@@ -26,3 +26,7 @@
 - 方法1. 在插件商店粘贴本插件名字(sanp_plugin_image_compression)并点击安装
 
 - 方法2. 在[主体项目](https://github.com/zhulinyv/Semi-Auto-NovelAI-to-Pixiv) `plugins\webui` 目录下直接克隆本项目
+
+## 📖 待办
+
+- [ ] 图片整理支持压缩的 jpg 格式
