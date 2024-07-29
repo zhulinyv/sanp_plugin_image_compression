@@ -104,12 +104,12 @@ def image_compression(format_, image_path):
         elif format_ == "png":
             compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 9]
 
-        cv2.imwrite(str(image)[:-4] + f".{format}", cv2_image, compression_params)
+        cv2.imwrite(str(image)[:-4] + f".{format_}", cv2_image, compression_params)
 
         if format_ == "png":
             with PILIMG.open(image) as pil_img:
                 pnginfo = pil_img.info
-                revert_img_info(None, str(image)[:-4] + f".{format}", pnginfo)
+                revert_img_info(None, str(image)[:-4] + f".{format_}", pnginfo)
         elif format_ == "jpg":
             pass
 
