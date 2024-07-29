@@ -1,7 +1,6 @@
 import gradio as gr
 
 from plugins.webui.sanp_plugin_image_compression.utils import (
-    compression_and_organization,
     image_compression,
     image_organization,
 )
@@ -25,10 +24,12 @@ def plugin():
             image_compression, inputs=[image_format, image_path], outputs=output_info
         )
         organization_button.click(
-            image_organization, inputs=image_path, outputs=output_info
+            image_organization,
+            inputs=[image_format, image_path, gr.Checkbox(False)],
+            outputs=output_info,
         )
         compression_and_organization_button.click(
-            compression_and_organization,
-            inputs=image_path,
+            image_organization,
+            inputs=[image_format, image_path, gr.Checkbox(True)],
             outputs=output_info,
         )
