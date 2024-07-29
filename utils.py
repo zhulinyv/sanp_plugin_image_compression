@@ -1,3 +1,7 @@
+import os
+import shutil
+from pathlib import Path
+
 import cv2
 import openpyxl
 from loguru import logger
@@ -6,7 +10,7 @@ from openpyxl.styles import Alignment
 from PIL import Image as PILIMG
 
 from utils.imgtools import return_pnginfo, revert_img_info
-from utils.utils import file_namel2pathl, file_path2dir, file_path2list
+from utils.utils import file_namel2pathl, file_path2list
 
 
 def image_organization(image_path):
@@ -85,7 +89,9 @@ def image_organization(image_path):
         for cell in row:
             cell.alignment = alignment
 
-    wb.save(file_path2dir(image_path) + "/organization.xlsx")
+    print(image_path)
+
+    wb.save(Path(image_path) / "organization.xlsx")
 
     logger.success("整理完成!")
     return "整理完成!"
@@ -95,7 +101,7 @@ def image_compression(format_, image_path):
     image_list = file_namel2pathl(file_path2list(image_path), image_path)
 
     for image in image_list:
-        logger.info(f"正在压缩{image}...")
+        logger.info(f"正在压缩 {image} ...")
 
         cv2_image = cv2.imread(image)
 
@@ -104,14 +110,17 @@ def image_compression(format_, image_path):
         elif format_ == "png":
             compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 9]
 
-        cv2.imwrite(str(image)[:-4] + f".{format_}", cv2_image, compression_params)
+        cv2.imwrite(f"./output/temp.{format_}", cv2_image, compression_params)
 
         if format_ == "png":
             with PILIMG.open(image) as pil_img:
                 pnginfo = pil_img.info
-                revert_img_info(None, str(image)[:-4] + f".{format_}", pnginfo)
+                revert_img_info(None, f"./output/temp.{format_}", pnginfo)
         elif format_ == "jpg":
             pass
+
+        os.remove(image)
+        shutil.move(f"./output/temp.{format_}", str(image)[:-4] + f".{format_}")
 
     logger.success("压缩完成!")
     return "压缩完成!"
