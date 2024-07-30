@@ -25,11 +25,11 @@ def plugin():
         )
         organization_button.click(
             image_organization,
-            inputs=[image_format, image_path, gr.Checkbox(False)],
+            inputs=[image_format, image_path, gr.Checkbox(False, visible=False)],
             outputs=output_info,
         )
         compression_and_organization_button.click(
             image_organization,
-            inputs=[image_format, image_path, gr.Checkbox(True)],
+            inputs=[image_format, image_path, gr.Checkbox(True, visible=False)],
             outputs=output_info,
         )
