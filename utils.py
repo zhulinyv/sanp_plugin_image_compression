@@ -4,12 +4,12 @@ from pathlib import Path
 
 import cv2
 import openpyxl
-from loguru import logger
 from openpyxl.drawing.image import Image as OPXIMG
 from openpyxl.styles import Alignment
 from PIL import Image as PILIMG
 
 from utils.imgtools import return_pnginfo, revert_img_info
+from utils.prepare import logger
 from utils.utils import file_namel2pathl, file_path2list
 
 
