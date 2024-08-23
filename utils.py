@@ -13,7 +13,7 @@ from utils.prepare import logger
 from utils.utils import file_namel2pathl, file_path2list
 
 
-def image_compression_(format_, image):
+def _image_compression(format_, image):
     cv2_image = cv2.imread(image)
     if format_ == "jpg":
         compression_params = [cv2.IMWRITE_JPEG_QUALITY, 90]
@@ -34,7 +34,7 @@ def image_compression(format_, image_path):
     image_list = file_namel2pathl(file_path2list(image_path), image_path)
     for image in image_list:
         logger.info(f"正在压缩 {image} ...")
-        image_compression_(format_, image)
+        _image_compression(format_, image)
     logger.success("压缩完成!")
     return "压缩完成!"
 
@@ -74,7 +74,8 @@ def image_organization(format_, image_path, switch):
             (
                 positive_input,
                 negative_input,
-                resolution,
+                width,
+                height,
                 steps,
                 scale,
                 noise_schedule,
@@ -82,10 +83,10 @@ def image_organization(format_, image_path, switch):
                 sm,
                 sm_dyn,
                 seed,
-            ) = return_pnginfo(pilimg)
+            ) = return_pnginfo(pilimg)[:-1]
             w, h = pilimg.size
         if switch:
-            image_compression_(format_, image)
+            _image_compression(format_, image)
             image = OPXIMG(str(image)[:-4] + f".{format_}")
         else:
             image = OPXIMG(image)
@@ -93,7 +94,7 @@ def image_organization(format_, image_path, switch):
         ws.add_image(image, f"A{number}")
         ws[f"B{number}"] = positive_input
         ws[f"C{number}"] = negative_input
-        ws[f"D{number}"] = resolution
+        ws[f"D{number}"] = f"{width}x{height}"
         ws[f"E{number}"] = steps
         ws[f"F{number}"] = scale
         ws[f"G{number}"] = noise_schedule
