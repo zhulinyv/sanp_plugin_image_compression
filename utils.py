@@ -50,7 +50,7 @@ def image_organization(format_, image_path, switch):
         ws.row_dimensions[row].height = 300
     for col in ["A", "B", "C"]:
         ws.column_dimensions[col].width = 40
-    for col in range(4, 12):
+    for col in range(4, 14):
         col_letter = openpyxl.utils.get_column_letter(col)
         ws.column_dimensions[col_letter].width = 20
     ws.append(
@@ -65,6 +65,8 @@ def image_organization(format_, image_path, switch):
             "采样器",
             "sm",
             "sm_dyn",
+            "variety",
+            "decrisp",
             "随机种子",
         ]
     )
@@ -82,6 +84,8 @@ def image_organization(format_, image_path, switch):
                 sampler,
                 sm,
                 sm_dyn,
+                variety,
+                decrisp,
                 seed,
             ) = return_pnginfo(pilimg)[:-1]
             w, h = pilimg.size
@@ -101,7 +105,9 @@ def image_organization(format_, image_path, switch):
         ws[f"H{number}"] = sampler
         ws[f"I{number}"] = sm
         ws[f"J{number}"] = sm_dyn
-        ws[f"K{number}"] = seed
+        ws[f"K{number}"] = variety
+        ws[f"L{number}"] = decrisp
+        ws[f"M{number}"] = seed
         number += 1
     alignment = Alignment(horizontal="center", vertical="center", wrapText=True)
     for row in ws.iter_rows():
