@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 import cv2
+import numpy as np
 import openpyxl
 from openpyxl.drawing.image import Image as OPXIMG
 from openpyxl.styles import Alignment
@@ -14,20 +15,47 @@ from utils.utils import file_namel2pathl, file_path2list
 
 
 def _image_compression(format_, image):
-    cv2_image = cv2.imread(image)
+    # 读取图像，保留所有通道（包括 Alpha）
+    cv2_image = cv2.imread(image, cv2.IMREAD_UNCHANGED)
+
     if format_ == "jpg":
+        # JPG 不支持透明，如果有 Alpha 通道，先与白色背景合并
+        if cv2_image.shape[2] == 4:
+            # 创建白色背景
+            bg = np.ones(cv2_image.shape[:2] + (3,), dtype=np.uint8) * 255
+            # 分离 BGRA 通道
+            b, g, r, a = cv2.split(cv2_image)
+            # 将 Alpha 归一化到 0-1 并合成
+            alpha = a / 255.0
+            b = (b * alpha + 255 * (1 - alpha)).astype(np.uint8)
+            g = (g * alpha + 255 * (1 - alpha)).astype(np.uint8)
+            r = (r * alpha + 255 * (1 - alpha)).astype(np.uint8)
+            cv2_image = cv2.merge([b, g, r])
+        else:
+            cv2_image = cv2.cvtColor(cv2_image, cv2.COLOR_BGRA2BGR) if cv2_image.shape[2] == 4 else cv2_image
+
         compression_params = [cv2.IMWRITE_JPEG_QUALITY, 90]
     elif format_ == "png":
+        # PNG 直接保留 Alpha 通道
         compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 9]
-    cv2.imwrite(f"./output/temp.{format_}", cv2_image, compression_params)
+    else:
+        raise ValueError("Unsupported format")
+
+    # 确保输出目录存在
+    os.makedirs("./output", exist_ok=True)
+    temp_path = f"./output/temp.{format_}"
+    cv2.imwrite(temp_path, cv2_image, compression_params)
+
+    # 保留原 PNG 元数据（如果需要）
     if format_ == "png":
         with PILIMG.open(image) as pil_img:
             pnginfo = pil_img.info
-            revert_img_info(None, f"./output/temp.{format_}", pnginfo)
-    elif format_ == "jpg":
-        pass
+            revert_img_info(None, temp_path, pnginfo)  # 假设 revert_img_info 函数存在
+
+    # 替换原文件
     os.remove(image)
-    shutil.move(f"./output/temp.{format_}", str(image)[:-4] + f".{format_}")
+    base, _ = os.path.splitext(image)
+    shutil.move(temp_path, base + f".{format_}")
 
 
 def image_compression(format_, image_path):
